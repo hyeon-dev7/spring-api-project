@@ -1,0 +1,121 @@
+{{>layouts/header}}
+
+<!-- 전체 화면 배경 이미지 -->
+<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-image: url('/image/hope-house-press-unsplash.jpg'); background-size: cover; background-position: center;"></div>
+
+<div class="container col-8" style="margin-top: 3rem;">
+    <div class="card" style="padding: 1rem;  background-color: rgba(255, 255, 255, 0.7);">
+        <div class="card-body">
+
+            <div class="mb-3">
+                <label for="username" class="form-label">아이디(이메일) </label>
+                <input type="email" class="form-control" id="username"
+                       aria-describedby="emailHelp">
+                <div id="username-error"></div>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">비밀번호</label>
+                <input type="password" class="form-control" id="password">
+                <div id="password-error"></div>
+            </div>
+            <div class="mb-3">
+                <label for="password_check" class="form-label">비밀번호 확인</label>
+                <input type="password" class="form-control" id="password_check">
+            </div>
+            <div class="mb-3">
+                <label for="name" class="form-label">이름</label>
+                <input type="text" class="form-control" name="name" id="name">
+                <div id="name-error"></div>
+            </div>
+            <div class="mb-3">
+                <label for="nickname" class="form-label">별명</label>
+                <input type="text" class="form-control" name="nickname" id="nickname">
+                <div id="nickname-error"></div>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="agree" onclick="check();">
+                <label class="form-check-label" for="agree">가입 약관 동의</label>
+            </div>
+            <div class="d-flex justify-content-center">
+                <button id="register-btn" class="btn btn-outline-dark">가입하기</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal fade" id="modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+             aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">가입 약관</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        가입 약관~~
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">취소</button>
+                        <button type="button" class="btn btn-outline-primary" id="agreeConfirm">동의</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--</div>-->
+
+{{>layouts/footer}}
+
+<script>
+    document.getElementById("register-btn").addEventListener("click", async (e) => {
+        e.preventDefault(); // 폼 기본 제출 막기
+        const pw = document.getElementById("password").value;
+        const pw_check = document.getElementById("password_check").value;
+        if (pw !== pw_check) {
+            alert("비밀번호가 일치하지 않습니다.");
+            return;
+        }
+
+//        const agree = document.getElementById("agree").checked;
+        //      if (!agree) {
+        //        alert("가입 약관에 동의해주세요.");
+        //      return;
+        //  }
+
+        const payload = {
+            username: document.getElementById("username").value,
+            password: pw,
+            name: document.getElementById("name").value,
+            nickname: document.getElementById("nickname").value
+        };
+        // 기존 오류 메시지 초기화
+        clearFieldErrors(["username", "password", "name", "nickname"]);
+
+        try {
+            const response = await fetch("/api/auth/register", {
+                method: 'POST',
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                window.location.href = "/login";
+
+            } else {
+                const res = await response.json();
+
+                if (response.status >= 500) {
+                    showServerError(res.message);
+                } else if (Array.isArray(res)) {
+                    showValidationErrors(res);
+                }
+            }
+        } catch (err) {
+            console.error("회원가입 실패:", err);
+            showServerError("연결이 불안정합니다. 다시 시도해주세요.");
+        }
+    });
+
+
+</script>

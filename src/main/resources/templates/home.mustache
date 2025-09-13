@@ -1,0 +1,144 @@
+{{>layouts/header}}
+
+<div class="container" style="margin-top: 2rem; text-align: center;">
+    <button class="accordion"> 자료실 별 인기도서 수</button>
+    <div class="panel" id="chartPanelLoc" style="width: 70%; height:400px; margin: 0 auto;">
+        <canvas id="chartCanvasLoc"></canvas>
+    </div>
+
+    <button class="accordion"> 최근 3년간 인기 도서 총 대출 횟수</button>
+    <div class="panel" id="chartPanelQuarter" style="width: 70%; height:400px; margin: 0 auto;">
+        <canvas id="chartCanvasQuarter"></canvas>
+    </div>
+
+    <button class="accordion"> 지난분기 TOP 5</button>
+    <div class="panel">
+        <div id="carousel">
+            <div class="carousel-item">
+                <button id="prevBtn" class="nav-button">◀</button>
+                <div id="bookContainer"></div>
+                <button id="nextBtn" class="nav-button">▶</button>
+            </div>
+        </div>
+    </div>
+    <div id="loader"></div>
+
+</div>
+{{>layouts/footer}}
+
+<script>
+    {
+        let books = [];
+        let currentIndex = 0;
+        let autoSlideInterval;
+
+        function showBook(index) {
+            const container = document.getElementById('bookContainer');
+            container.innerHTML = '';
+
+            if (books.length > 0) {
+                const book = books[index];
+                const aLink = document.createElement('a');
+                aLink.href = `/book/detail/${book.id}`
+                const img = document.createElement('img');
+                img.src = book.image;
+                img.alt = book.title;
+                aLink.append(img);
+                container.appendChild(aLink);
+            }
+        }
+
+
+        function setupCarousel() {
+            document.getElementById('prevBtn').addEventListener('click', () => {
+                currentIndex = (currentIndex - 1 + books.length) % books.length;
+                showBook(currentIndex);
+                autoSlide();
+            });
+
+            document.getElementById('nextBtn').addEventListener('click', () => {
+                currentIndex = (currentIndex + 1) % books.length;
+                showBook(currentIndex);
+                autoSlide();
+            });
+
+            autoSlideInterval = setInterval(() => {
+                currentIndex = (currentIndex + 1) % books.length;
+                showBook(currentIndex);
+            }, 3000); // 3초마다 자동 슬라이드
+        }
+
+        function autoSlide() {
+            clearInterval(autoSlideInterval);
+            autoSlideInterval = setInterval(() => {
+                currentIndex = (currentIndex + 1) % books.length;
+                showBook(currentIndex);
+            }, 3000);
+        }
+
+        showLoader();
+        fetch('/api/books')
+                .then(response => response.json())
+                .then(data => {
+                    books = data;
+                    showBook(currentIndex);
+                    setupCarousel();
+                })
+                .catch(error => console.error('홈화면 오류 발생:', error))
+                .finally(() => {
+                    hideLoader(); // 로딩 종료
+                });
+    }
+
+
+    async function loadChartData() {
+        try {
+            const res = await fetch('/api/books/chart');
+            const data = await res.json();
+
+            const byLocationArray = Object.entries(data["loc"])
+                    .map(([location, count]) => ({location, count}))
+                    .slice(-12); // 최근 12개만 추출
+
+            const byQuarterArray = Object.entries(data["quarter"]).map(([quarter, count]) => ({quarter, count}))
+                    .slice(-12);
+
+            drawChart({
+                jsonData: byLocationArray,
+                labelKey: "location",
+                valueKey: "count",
+                chartContainerId: "chartPanelLoc",
+                canvasId: "chartCanvasLoc",
+                chartType: "pie",
+                datasetLabel: "",
+                xAxisLabel: "자료실",
+                yAxisLabel: "권수",
+                noDataMessage: "자료실별 데이터가 없습니다"
+            });
+
+            drawChart({
+                jsonData: byQuarterArray,
+                labelKey: "quarter",
+                valueKey: "count",
+                chartContainerId: "chartPanelQuarter",
+                canvasId: "chartCanvasQuarter",
+                chartType: "line",
+                datasetLabel: "대출 횟수",
+                xAxisLabel: "분기",
+                yAxisLabel: "횟수",
+                noDataMessage: "분기별 데이터가 없습니다"
+            });
+
+        } catch (err) {
+            console.error('차트 데이터 불러오기 실패:', err);
+        }
+    }
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadChartData();
+        renderAccordion();
+    });
+
+
+</script>

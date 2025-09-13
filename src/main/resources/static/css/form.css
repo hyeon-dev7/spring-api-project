@@ -1,0 +1,60 @@
+.form-control:focus {
+    box-shadow: none; /* 그림자 제거 */
+    border-color: #333;
+}
+
+.btn:focus,
+.btn:focus:active {
+    box-shadow: none;
+    outline: none;
+}
+
+
+.form-check-input:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+
+/* 검색창 */
+.search-bar {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-input {
+    padding: 10px;
+    width: 300px; /* 서치바 너비 */
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.search-input:focus {
+    border-color: #333;
+}
+
+#search-btn {
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    padding: 10px;
+    margin-left: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#search-btn i {
+    font-size: 20px;
+}
+
+.search-btn:hover {
+    background-color: #111;
+}

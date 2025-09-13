@@ -1,0 +1,34 @@
+<div class="mt-4 d-flex justify-content-center">
+    <div class="card p-3 shadow-sm" style="width: 100%;">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <textarea class="form-control" rows="1" id="content" placeholder="후기를 작성해 주세요"
+                          style="max-width: 650px; width: 100%; resize: vertical;"></textarea>
+                <span id="content-error"></span>
+                <span id="stars-error"></span>
+            </div>
+            <div class="col-12 col-md-2 d-flex justify-content-center">
+                <div class="star-rating">
+                    <input type="radio" class="star" name="stars" value="1">
+                    <input type="radio" class="star" name="stars" value="2">
+                    <input type="radio" class="star" name="stars" value="3">
+                    <input type="radio" class="star" name="stars" value="4">
+                    <input type="radio" class="star" name="stars" value="5">
+                </div>
+            </div>
+            <!-- flex-wrap : 한 줄에 다 들어가지 않으면 자동 줄 바꿈 -->
+            <div class="col-12 col-md-2 d-flex flex-wrap justify-content-end">
+                <button class="btn btn-outline-dark btn-sm" id="reviewSubmitBtn">완료</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const textarea = document.getElementById("content");
+
+    textarea.addEventListener("input", () => {
+        textarea.style.height = "auto"; // 높이를 초기화한 후
+        textarea.style.height = textarea.scrollHeight + "px"; // 내용 높이만큼 늘림
+    });
+</script>

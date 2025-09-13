@@ -1,0 +1,105 @@
+{{>layouts/header}}
+<div id="loader"></div>
+<div class="search-bar">
+    <input type="text" placeholder="검색어를 입력하세요" class="search-input" id="keyword">
+    <button id="search-btn">
+        <i class="fa-solid fa-magnifying-glass"></i>
+    </button>
+</div>
+<div id="resultArea" style="margin-top: 2rem;"></div>
+<ul class="pagination justify-content-center" id="pagination">
+</ul>
+{{>layouts/footer}}
+
+<script>
+    // 뒤로가기, 새로고침 시 데이터가 그대로 나오는 문제 해결
+    document.addEventListener("DOMContentLoaded", () => {
+        const params = new URLSearchParams(window.location.search);
+        const keyword = params.get("keyword");
+        const page = parseInt(params.get("page")) || 0;
+
+        if (keyword && keyword.trim() !== "") {
+            document.getElementById("keyword").value = keyword;
+            searchBooks(keyword, page);
+        }
+    });
+
+    function updateURL(keyword, page) {
+        const url = `/book/search?keyword=${keyword}&page=${page}`;
+        window.history.pushState({keyword, page}, '', url);
+    }
+
+
+    document.getElementById("search-btn").addEventListener("click", () => {
+        const keyword = document.getElementById("keyword").value.trim();
+        if (!keyword) {
+            showResultMessage("검색어를 입력하세요.", "brown");
+            return;
+        }
+        searchBooks(keyword, 0); // 첫 페이지부터 시작
+    });
+
+    document.getElementById("keyword").addEventListener("keydown", (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById("search-btn").click();
+        }
+    });
+
+    async function searchBooks(keyword, page) {
+        document.getElementById("resultArea").innerHTML = "";
+        showLoader();
+        try {
+            const response = await fetch(`/api/books/search?keyword=${keyword}&page=${page}`);
+            const data = await response.json();
+
+            if (!data.items || data.items.length === 0) {
+                showResultMessage("검색 결과가 없습니다.");
+                return;
+            }
+            const totalPages = Math.ceil(data.total / 20);
+
+            renderResults(data.items, ["", "제목", "작가", "출판사", "더보기"], `/book/detail/{id}/${keyword}/${page}`)
+            updateURL(keyword, page);
+
+            if (totalPages > 1) {
+                renderPagination(page, totalPages, (clickedPage) => {
+                    searchBooks(keyword, clickedPage); // 페이지 이동
+                });
+            }
+
+        } catch (error) {
+            console.error(error);
+            showResultMessage("오류가 발생했습니다.", "brown");
+        } finally {
+            hideLoader(); // 로딩 종료
+        }
+    }
+
+
+    window.addEventListener("popstate", (e) => {
+        const state = e.state;
+
+        if (state && state.keyword !== undefined && state.page !== undefined) {
+            searchBooks(state.keyword, state.page);
+        } else { // URL에서 다시 파싱 (새로고침 혹은 첫 진입)
+            const params = new URLSearchParams(window.location.search);
+            const keyword = params.get("keyword");
+            const page = parseInt(params.get("page")) || 0;
+
+            if (keyword) {
+                searchBooks(keyword, page);
+            } else {
+                document.getElementById("resultArea").textContent = "검색어를 입력하세요.";
+            }
+        }
+    });
+
+    function showResultMessage(message, color = "black") {
+        const resultArea = document.getElementById("resultArea");
+        resultArea.innerHTML = "";
+        resultArea.textContent = message;
+        resultArea.style.textAlign = "center";  // 가로 가운데 정렬
+        resultArea.style.color = color;
+    }
+</script>

@@ -1,0 +1,126 @@
+.accordion {
+    background-color: white;
+    cursor: pointer;
+    padding: 14px;
+    width: 80%;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 16px;
+    transition: 0.4s;
+    text-align: center;
+}
+
+/* 첫 번째 아코디언: 위쪽 border-radius와 상단 border */
+.accordion:first-child {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+/* 마지막 아코디언: 아래쪽 border-radius */
+.accordion:last-of-type {
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.accordion.active, .accordion:hover {
+    background-color: #e0e0e0;
+}
+
+.panel {
+    padding: 20px;
+    display: none;
+    background-color: white;
+    overflow: hidden;
+}
+
+
+/*전체 캐러셀 컨테이너 */
+.carousel {
+    width: 100%; /* 화면 너비에 맞게 전체 너비를 100%로 설정 */
+    display: flex; /* flexbox로 내부 아이템을 정렬 */
+    justify-content: center; /* 수평 중앙 정렬 */
+    align-items: center; /* 수직 중앙 정렬 */
+    overflow: hidden;
+    position: relative;
+}
+
+/* .carousel-item: 각 캐러셀 항목 */
+.carousel-item {
+    position: relative; /* 버튼을 절대 위치로 배치할 수 있도록 설정 */
+    width: 80%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#bookContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    margin-left: 25%;
+}
+
+#bookContainer img {
+    width: 100%;
+    height: auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.nav-button {
+    position: absolute;
+    top: 50%;
+    background-color: rgba(0, 0, 0, 0.6); /* 버튼 배경을 반투명 검정색으로 설정 */
+    color: white;
+    border: none;
+    padding: 12px;
+    cursor: pointer;
+    /*font-size: 16px;*/
+    font-size: 1vw; /* 버튼 폰트 크기를 화면 너비의 1%로 설정하여 반응형 디자인 적용 */
+}
+
+#prevBtn {
+    left: 0; /* 왼쪽에 위치시킴 */
+    margin-left: 25%;
+}
+
+#nextBtn {
+    right: 0;
+    margin-left: 5%;
+}
+
+
+/* 페이징 */
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+}
+
+.pagination li {
+    margin-right: 5px;
+}
+
+.pagination li a {
+    display: block;
+    padding: 5px 10px;
+    text-decoration: none;
+    color: #1F2326;
+    border: 1px solid transparent;
+}
+
+.pagination li.active a {
+    font-weight: bold;
+    border-color: #1F2326; /* 테두리 색상 */
+}
+
+.pagination li.disabled a {
+    pointer-events: none;
+    color: #C0C0C0;
+}
+
+.pagination li a:hover {
+    color: white;
+    background-color: #111;
+}

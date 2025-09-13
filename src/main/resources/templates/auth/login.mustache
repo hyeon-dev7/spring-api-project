@@ -1,0 +1,57 @@
+{{>layouts/header}}
+<!-- 전체 화면을 두 부분으로 -->
+<div style="display: flex; height: 100vh;">
+    <!-- 왼쪽 -->
+    <div class="col-6"
+         style="display: flex; justify-content: center; align-items: center; padding: 2rem; width: 80%; z-index: 1;">
+        <div class="card" style="padding: 1rem; background-color: rgba(255, 255, 255, 0.7);">
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="username" class="form-label">아이디 (이메일)</label>
+                    <input type="email" class="form-control" id="username" aria-describedby="emailHelp">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">비밀번호</label>
+                    <input type="password" class="form-control" id="password">
+                </div>
+                <button id="loginBtn" class="btn btn-outline-dark">로그인</button>
+            </div>
+        </div>
+    </div>
+    <!-- 오른쪽 끝까지 이미지 -->
+    <div style="position: absolute; right: 0; top: 0; width: 50%; height: 100vh; background-image: url('/image/hope-house-press-unsplash.jpg'); background-size: cover; background-position: center; z-index: -1; opacity: 0.7;">
+    </div>
+</div>
+{{>layouts/footer}}
+
+<script>
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            document.getElementById('loginBtn').click();
+        }
+    });
+
+    document.getElementById("loginBtn").addEventListener("click", () => {
+        const req = {
+            "username": document.getElementById("username").value,
+            "password": document.getElementById("password").value
+        }
+        fetch("/api/auth/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(req)
+        }).then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = data.redirect;
+                    } else {
+                        alert(data.message || "로그인에 실패했습니다.");
+                    }
+                })
+                .catch(() => {
+                    alert("서버 오류가 발생했습니다.");
+                });
+    });
+</script>
