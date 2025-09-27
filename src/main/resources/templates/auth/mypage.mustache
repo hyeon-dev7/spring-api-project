@@ -131,6 +131,7 @@
         // 폼 요소 채우기
         const contentInput = tr.querySelector("#content");
         if (contentInput) contentInput.value = content;
+        autoResizeTextarea();
 
         const starInputs = tr.querySelectorAll('input[name="stars"]');
         starInputs.forEach(star => {

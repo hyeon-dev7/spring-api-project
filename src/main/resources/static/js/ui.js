@@ -82,3 +82,13 @@ function getStarsValue() {
     }
     return parseInt(selectedValue);
 }
+
+
+function autoResizeTextarea() {
+    const textarea = document.getElementById("content");
+
+    textarea.addEventListener("input", () => {
+        textarea.style.height = "auto"; // 높이를 초기화한 후
+        textarea.style.height = textarea.scrollHeight + "px"; // 내용 높이만큼 늘림
+    });
+}
